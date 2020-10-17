@@ -32,52 +32,27 @@ type Config struct {
 	} `yaml:"match"`
 }
 
-func NewConfig(configPath string) (*Config, error) {
+func NewConfig(configPath string, regexpSlice []string) (*Config, error) {
 	c := &Config{}
-	if err := c.validateConfigPath(configPath); err != nil {
-		return nil, errors.WithStack(err)
-	}
-	file, err := os.Open(configPath)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	defer file.Close()
-	d := yaml.NewDecoder(file)
-	if err := d.Decode(&c); err != nil {
-		return nil, errors.WithStack(err)
-	}
-	if len(c.Palette) == 0 {
-		for _, v := range []string{
-			"#089400",
-			"#1b96f3",
-			"#ef0195",
-			"#fcdf87",
-			"#f68741",
-			"#8CCBEA",
-			"#A4E57E",
-			"#FFDB72",
-			"#ad4c35",
-			"#FF7272",
-			"#FFB3FF",
-			"#9999FF",
-			// "#320E3B",
-			"#4C2A85",
-			"#6B7FD7",
-			"#BCEDF6",
-			"#DDFBD2",
-			"#D664BE",
-			"#DF99F0",
-			"#B191FF",
-			"#F4BFDB",
-			"#FFE9F3",
-			"#87BAAB",
-		} {
-			c.Palette = append(c.Palette, Palette{
-				"", v, nil, nil,
-			})
+	if err := c.validateConfigPath(configPath); err == nil {
+		if err := c.fromFile(configPath); err != nil {
+			return nil, errors.WithStack(err)
 		}
 	}
+
+	if len(c.Palette) == 0 {
+		c.setDefaultPaletteColors()
+	}
+
 	pIndex := 0
+	for _, m := range regexpSlice {
+		c.Palette[pIndex].RegexpStringList = append(c.Palette[pIndex].RegexpStringList, m)
+		pIndex++
+		if pIndex > len(c.Palette)-1 {
+			pIndex = 0
+		}
+	}
+
 	for _, m := range c.Match {
 		c.Palette[pIndex].RegexpStringList = append(c.Palette[pIndex].RegexpStringList, m.RegexpStringList...)
 		pIndex++
@@ -85,12 +60,56 @@ func NewConfig(configPath string) (*Config, error) {
 			pIndex = 0
 		}
 	}
-
 	if err := c.compileRegexps(); err != nil {
 		return nil, errors.WithStack(err)
 	}
 
 	return c, nil
+}
+
+func (c *Config) fromFile(configPath string) error {
+	file, err := os.Open(configPath)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer file.Close()
+	d := yaml.NewDecoder(file)
+	if err := d.Decode(&c); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (c *Config) setDefaultPaletteColors() {
+	for _, v := range []string{
+		"#089400",
+		"#1b96f3",
+		"#ef0195",
+		"#fcdf87",
+		"#f68741",
+		"#8CCBEA",
+		"#A4E57E",
+		"#FFDB72",
+		"#ad4c35",
+		"#FF7272",
+		"#FFB3FF",
+		"#9999FF",
+		// "#320E3B",
+		"#4C2A85",
+		"#6B7FD7",
+		"#BCEDF6",
+		"#DDFBD2",
+		"#D664BE",
+		"#DF99F0",
+		"#B191FF",
+		"#F4BFDB",
+		"#FFE9F3",
+		"#87BAAB",
+	} {
+		c.Palette = append(c.Palette, Palette{
+			"", v, nil, nil,
+		})
+	}
 }
 
 func (c Config) validateConfigPath(path string) error {
@@ -169,23 +188,28 @@ func processLine(line string) string {
 }
 
 func main() {
-	var configPath string
 	app := &cli.App{
 		// Name:  "cmatch",
 		// Usage: "",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:        "config",
-				Aliases:     []string{"c"},
-				Usage:       "path to config file",
-				Destination: &configPath,
-				Value:       "./config.yml",
+				Name:     "config",
+				Aliases:  []string{"c"},
+				Usage:    "path to config file",
+				Value:    "./config.yml",
+				Required: false,
 				// DefaultText: "./config.yml",
+			},
+			&cli.StringSliceFlag{
+				Name:     "regexp",
+				Aliases:  []string{"r"},
+				Usage:    "-r regexp1 -r regexp2",
+				Required: false,
 			},
 		},
 		Action: func(c *cli.Context) error {
 			var err error
-			Cfg, err = NewConfig(configPath)
+			Cfg, err = NewConfig(c.String("config"), c.StringSlice("regexp"))
 			if err != nil {
 				return errors.WithStack(err)
 			}
@@ -207,6 +231,6 @@ func main() {
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
-		fmt.Printf("%+v\n", err)
+		// fmt.Printf("%+v\n", err)
 	}
 }

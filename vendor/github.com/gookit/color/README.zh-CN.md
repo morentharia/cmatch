@@ -15,7 +15,7 @@ Golang下的命令行色彩使用库, 拥有丰富的色彩渲染输出，通用
 
 基本颜色预览：
 
-![basic-color](_examples/images/basic-color.png)
+![basic-color](_examples/images/basic-color2.png)
 
 现在，256色和RGB色彩也已经支持windows CMD和PowerShell中工作：
 
@@ -39,17 +39,15 @@ Golang下的命令行色彩使用库, 拥有丰富的色彩渲染输出，通用
   - [godoc for gopkg](https://pkg.go.dev/gopkg.in/gookit/color.v1)
   - [godoc for github](https://pkg.go.dev/github.com/gookit/color)
 
+## 安装
+
+```bash
+go get github.com/gookit/color
+```
+
 ## 快速开始
 
 如下，引入当前包就可以快速的使用
-
-```bash
-import "gopkg.in/gookit/color.v1" // 推荐
-// or
-import "github.com/gookit/color"
-```
-
-### 如何使用
 
 ```go
 package main

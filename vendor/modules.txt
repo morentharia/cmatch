@@ -1,8 +1,9 @@
-# github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
+# github.com/cpuguy83/go-md2man/v2 v2.0.0
+## explicit
 github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
-# github.com/gookit/color v1.2.7
+# github.com/gookit/color v1.3.1
 ## explicit
 github.com/gookit/color
 # github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88
@@ -10,7 +11,7 @@ github.com/gookit/color
 # github.com/k0kubun/pp v3.0.1+incompatible
 ## explicit
 github.com/k0kubun/pp
-# github.com/mattn/go-colorable v0.1.7
+# github.com/mattn/go-colorable v0.1.8
 ## explicit
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12

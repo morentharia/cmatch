@@ -40,8 +40,12 @@ const ResetSet = "\x1b[0m"
 const CodeExpr = `\033\[[\d;?]+m`
 
 var (
-	// Enable switch color display
+	// Enable switch color render and display
 	Enable = true
+	// RenderTag render HTML tag on call color.Xprint, color.PrintX
+	RenderTag = true
+	// errors on windows render OR print to io.Writer
+	errors []error
 	// output the default io.Writer message print
 	output io.Writer = os.Stdout
 	// mark current env, It's like in `cmd.exe`
@@ -65,9 +69,9 @@ func Set(colors ...Color) (int, error) {
 	}
 
 	// on windows cmd.exe
-	if isLikeInCmd {
-		return winSet(colors...)
-	}
+	// if isLikeInCmd {
+	// 	return winSet(colors...)
+	// }
 
 	return fmt.Printf(SettingTpl, colors2code(colors...))
 }
@@ -79,16 +83,23 @@ func Reset() (int, error) {
 	}
 
 	// on windows cmd.exe
-	if isLikeInCmd {
-		return winReset()
-	}
+	// if isLikeInCmd {
+	// 	return winReset()
+	// }
 
 	return fmt.Print(ResetSet)
 }
 
 // Disable disable color output
-func Disable() {
+func Disable() bool {
+	oldVal := Enable
 	Enable = false
+	return oldVal
+}
+
+// NotRenderTag on call color.Xprint, color.PrintX
+func NotRenderTag() {
+	RenderTag = false
 }
 
 // SetOutput set default colored text output
@@ -99,6 +110,18 @@ func SetOutput(w io.Writer) {
 // ResetOutput reset output
 func ResetOutput() {
 	output = os.Stdout
+}
+
+// ResetOptions reset all package option setting
+func ResetOptions() {
+	RenderTag = true
+	Enable = true
+	output = os.Stdout
+}
+
+// ForceColor force open color render
+func ForceColor() bool {
+	return ForceOpenColor()
 }
 
 // ForceOpenColor force open color render
@@ -112,6 +135,11 @@ func ForceOpenColor() bool {
 // IsLikeInCmd check result
 func IsLikeInCmd() bool {
 	return isLikeInCmd
+}
+
+// GetErrors info
+func GetErrors() []error {
+	return errors
 }
 
 /*************************************************************

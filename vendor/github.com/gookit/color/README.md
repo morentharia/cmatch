@@ -15,7 +15,7 @@ A command-line color library with true color support, universal API methods and 
 
 Basic color preview:
 
-![basic-color](_examples/images/basic-color.png)
+![basic-color](_examples/images/basic-color2.png)
 
 Now, 256 colors and RGB colors have also been supported to work in Windows CMD and PowerShell:
 
@@ -38,20 +38,20 @@ Now, 256 colors and RGB colors have also been supported to work in Windows CMD a
   - [godoc for gopkg](https://pkg.go.dev/gopkg.in/gookit/color.v1)
   - [godoc for github](https://pkg.go.dev/github.com/gookit/color)
 
-## Quick start
+## Install
 
 ```bash
-import "gopkg.in/gookit/color.v1" // is recommended
-// or
-import "github.com/gookit/color"
+go get github.com/gookit/color
 ```
+
+## Quick start
 
 ```go
 package main
 
 import (
 	"fmt"
-	
+
 	"github.com/gookit/color"
 )
 
